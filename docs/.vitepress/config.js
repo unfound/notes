@@ -13,6 +13,10 @@ module.exports = {
                 },
                 {
                     text: '前端资源', link: '/resource/'
+                }, {
+                    text: '游戏开发', link: '/games/'
+                }, {
+                    text: 'GIT相关', link: '/git/'
                 }
             ]
         }
