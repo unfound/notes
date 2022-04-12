@@ -23,6 +23,8 @@ module.exports = {
                     text: '面试相关', link: '/audition/'
                 }, {
                     text: '后端知识', link: '/servers/'
+                }, {
+                    text: '其他', link: '/other/'
                 }
             ]
         }
