@@ -1,5 +1,14 @@
 # 开发环境相关配置
 
+## nvm设置
+
+nvm 安装路径下找到setting.txt，在后面加上
+
+```
+node_mirror: https://npmmirror.com/mirrors/node/
+npm_mirror: https://npmmirror.com/mirrors/npm/
+```
+
 ## npm淘宝镜像设置
 
 ```bash
@@ -7,11 +16,13 @@
 npm config get registry
 
 # 设置淘宝镜像源
-npm config set registry https://registry.npm.taobao.org
+npm config set registry https://registry.npmmirror.com/
 
 # 修改回原来的镜像源
 npm config set registry https://registry.npmjs.org
 ```
+
+> 淘宝镜像地址已修改
 
 ## 安装cnpm
 
