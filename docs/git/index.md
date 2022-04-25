@@ -19,3 +19,25 @@ git pull origin master  // 检出分支
 git rm -r --cached /dist
 git commit -m "rm /dist"
 ```
+
+## git stash命令
+
+git stash 命令主要用于暂存一些本地变更
+
+```
+git stash list [<options>]
+git stash show [<stash>]
+git stash drop [-q|--quiet] [<stash>]
+git stash ( pop | apply ) [--index] [-q|--quiet] [<stash>]
+git stash branch <branchname> [<stash>]
+git stash save [-p|--patch] [-k|--[no-]keep-index] [-q|--quiet]
+                [-u|--include-untracked] [-a|--all] [<message>]
+git stash [push [-p|--patch] [-k|--[no-]keep-index] [-q|--quiet]
+         [-u|--include-untracked] [-a|--all] [-m|--message <message>]]
+         [--] [<pathspec>…​]]
+git stash clear
+git stash create [<message>]
+git stash store [-m|--message <message>] [-q|--quiet] <commit>
+```
+
+> 使用git stash save \[\<message\>\]来代替直接使用git stash
