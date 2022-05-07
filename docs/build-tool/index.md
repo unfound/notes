@@ -50,3 +50,45 @@
 10. public下的文件可以通过设置alias来兼容
 11. 动态reqire使用import来解决
 12. 打包不明报错在最新版版本解决
+
+
+## 使用pnpm管理monorepo项目
+
+### 什么是monorepo
+
+monorepo指的在一个大的仓库中管理多个模块的项目管理方式
+好处有：
+- 统一管理
+- 依赖提升
+
+### 主要步骤
+
+- 在根目录创建并且配置pnpm-workspace.yaml
+
+```yaml
+packages:
+  # 子模块
+  - 'packages/**'
+  # 排除子模块中的某些目录
+  - '!**/test/**'
+```
+
+- 一些常用命令
+
+```bash
+# 根目录安装依赖 -w
+pnpm install typescript -w -D
+
+# 安装局部依赖使用 --filter [<pkg>]
+# 注意子模块的package.json里的那么要一致，如@mono/web
+# 像@mono这样的前缀好像是必要的（并不是只能是@mono
+pnpm install vue --filter @mono/web
+
+# 子模块之间互相引用使用下面形式
+# 则@mono/tool就可以直接按照依赖那样引用了
+pnpm i @mono/tool --filter @mono/web @mono/server
+
+# 同时执行多个指令，可以写在script里
+# 这个效果还有待商榷
+pnpm -C ./packages/server start && pnpm -C ./packages/web dev
+```
