@@ -36,7 +36,7 @@
 
 ## Vue
 
-### vue初始化流程
+### Vue初始化流程
 
 初始化vue的环境，然后编译模板，执行setup，获取组件update函数，然后放入ReactiveEffect中执行以收集依赖，最后渲染dom。
 当组件状态变更时，会将对应的Dep中的更新函数（包括update函数）放入一个异步更新队列中（会有去重和重排等操作）并在nextTick后执行。（所以也就不会出现重复更新的问题）得到虚拟dom后进行diff操作，再patch到真实dom上
@@ -57,6 +57,52 @@
 - 源码体积优化
   - 移除部分不常用API
   - 对Tree-shaking更友好
+
+### Vue diff原理
+
+Vue2.x版本的diff原理 -- 双端比较
+- 新旧列表前后各一个指针进行相互对比
+- newStart分别与oldStart和oldEnd进行对比，同理newEnd分别与oldStart和oldEnd进行对比
+- 以newStart为例
+  - 如果与oldStart相同，则直接patch并且两个指针都后移
+  - 如果与oldEnd相同，则patch后要进行节点的移动，将该节点移到oldStart前，newStart++，oldEnd--
+- 如果全部不同的话
+  - 创建旧节点的map，key是节点的key，未定义的话则是index，value是下标
+  - 从map中寻找newStart所对应的节点
+    - 找到了，就patch后，将节点移动到oldStart前，并且把旧节点位置的值置为undefined
+    - 没找到，就创建新节点插入到oldStart前
+    - newStart++
+- 剩下新队列，创建所有节点插入newEnd + 1节点之前
+- 剩下旧队列，直接删除
+
+Vue3版本的diff原理 -- 最长递增子序列
+- 比较新旧队列的起始节点
+  - 相同则 patch 后 i++
+  - 不同则break
+- 比较新旧队列的结束节点
+  - 相同则 patch 后 e1-- e2--
+  - 不同则break
+- 如果就旧队列遍历完且新队列还有的话（i > e1 && i <= e2），插入新节点
+- 如果就新队列遍历完且就队列还有的话（i > e2 && i <= e1），删除旧节点
+- 如果两个队列都未遍历完的话
+  - 创建新节点map，key是节点的key，value是i
+  - 记录新队列剩余节点toBePatched，初始化已patch节点数patched = 0，最大下标maxNewIndexSoFar，以及一个长度为newIndexToOldIndexMap的数组值为0
+  - 遍历旧队列
+    - 如果新队列节点已经全部patch的话（patched >= toBePatched）,则删除所有剩余节点
+    - 获取对应的新节点下标（有key的话直接map里取，没有的话遍历新队列）
+      - 取不到就删除
+      - 取到的话
+        - 记录新节点对应旧节点位置newIndexToOldIndexMap[newIndex - s2] = i + 1
+        - 如果大于maxNewIndexSoFar，则记录，否则标记该次patch需要移动操作
+        - 最后patch
+        - patched++
+  - 如果需要移动的话，则求出最长递增子序列
+  - 从后向前遍历新队列
+    - 如果对应的旧节点不存在（newIndexToOldIndexMap[i] === 0），则创建节点
+    - 需要移动的话，判断下标是否在最长递增子序列中
+      - 在则不动
+      - 不在则移动，如果后面没有节点则移动到末尾，有节点则移动到该节点前
+
 
 ## 网络协议优化
 
