@@ -103,6 +103,50 @@ Vue3版本的diff原理 -- 最长递增子序列
       - 在则不动
       - 不在则移动，如果后面没有节点则移动到末尾，有节点则移动到该节点前
 
+## HTTP
+
+### HTTP头
+
+请求头
+- Cookie
+- User-Agent
+- Accept
+- Accept-Language
+- Accept-Encoding
+- Connection
+- Referer
+- If-Modify-Since
+- If-None-Match
+
+响应头
+- Set-Cookie
+- Content-Type
+- Connection
+- Date
+- Expire
+- Cache-Control
+- Last-Modified
+- Etag
+
+### 状态码
+
+- 2xx 成功
+  - 200 成功
+  - 204 无返回实体
+  - 206 返回部分实体
+- 3xx 重定向
+  - 301 永久性重定向
+  - 302 临时性重定向
+  - 303 和302类似，当需要使用GET获取资源
+  - 304 资源未变更，使用缓存
+- 4xx 客户端错误
+  - 400 请求报文有语法错误，一般参数错误会报400
+  - 401 未认证，未登录或者cookie过期返回
+  - 403 无权限访问
+  - 404 服务器没有找到该资源
+- 5xx 服务端错误
+  - 500 服务器出错
+  - 503 服务器超负荷或维护中
 
 ## 网络协议优化
 
@@ -180,7 +224,7 @@ web -> native
   - window.jsbridge.call() 安卓可以直接注入一个对象然后直接调用方法
   - window.webkit.messageHandlers.call.postMessage() WKWebview使用这种形式，UIWebview可以使用JavaScriptCore来注入全局自定义对象
 
-## 其他跨端方案
+### 其他跨端方案
 
 - Weex （感觉已经无了）
 - React Native
@@ -190,3 +234,63 @@ web -> native
   - 自己实现渲染引擎（skia）
   - 使用Dart开发，编译成机器码
 - Kotlin （好像偏向编译器？有兴趣再看看吧）
+
+## 性能优化
+
+- 图片优化
+  - 使用更小的图片格式如webp，svg等
+  - 小图片转base64或者雪碧图
+  - 懒加载
+- 代码分割、按需加载
+- 使用缓存、CDN等优化加载速度
+- 节流防抖等优化性能
+- requestAnimationFrame来优化动画效果
+- web workers优化计算
+- 开启gzip压缩
+
+## Webpack
+
+### loader和plugin的区别
+
+loader主要是用来处理特定类型的文件，进行转换的功能模块。
+plugin则可以通过webpack提供的各种钩子实现更多样化的功能，如，注入环境变量，打包优化，资源管理等。
+
+常用loader
+- babel-loader
+- ts-loader
+- vue-loader
+- css-loader
+- style-loader
+- less-loader
+
+常用的plugin
+- eslint相关
+- 生成HTML的
+- 压缩代码
+- 移动文件
+- 分割代码
+- 缓存
+
+## Vite
+
+### Vite为什么快
+
+- 得益于浏览器原生支持ES模块，所以vite无需遍历全部依赖模块，只需要处理url
+- 区分依赖和源码
+  - 使用esbuild对依赖进行预构建，并强缓存（依赖版本变化会刷新，如果更改依赖则需要清除浏览器缓存）
+  - 以原生esm方式提供源码，让浏览器接管打包的部分工作，并动态导入代码
+- 更快的HMR
+- 为什么仍然需要打包？为了更优的性能
+  - 合并模块
+  - 代码分割和懒加载
+  - tree-shaking
+
+### 迁移vite主要做了哪些工作
+
+- 调研可行性和难度
+- 渐进式升级：开发环境使用vite；生成环境仍然使用webpack
+- commonjs模块的引入方式更改为ES模块标准
+- 设置vite的入口文件（vite的入口是HTML）
+- 批量导入冲突，自己编写vite插件解决
+- 对于绝对路径的图片处理（webpack不处理，vite会处理，通过设置alias来兼容）
+- .vue扩展不支持省略（升级版本就解决了）
